@@ -9,8 +9,8 @@ Now you can just run python script and select a book you want to export.
 Simplest way to get your highlights:
 
 ```
-$ pip install -r requirements.txt
-$ python ibooks_highlights_exporter.py
+$ potry install
+$ poetry run python3 ibooks_highlights_exporter.py
 ```
 
 ## Packaging an app
