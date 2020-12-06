@@ -25,7 +25,7 @@ $ python setup.py py2app
 
 But then application refuses to run from system (though it succesfully runs from terminal).
 
-You can reference links to begin with:
+You can reference these links to begin with:
 
 * [Moosystem article](https://moosystems.com/articles/14-distribute-django-app-as-native-desktop-app-02.html)
 * [Metachris blogpost](https://www.metachris.com/2015/11/create-standalone-mac-os-x-applications-with-python-and-py2app/)
