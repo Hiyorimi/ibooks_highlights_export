@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "ibooks_highlights_export"
+version = "0.1.0"
+description = ""
+authors = ["Hiyorimi <playittodeath@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+altgraph = "^0.17"
+pretty = "^0.1"
+py2app = "^0.22"
+pyparsing = "^2.4.7"
+packaging = "^20.7"
+Jinja2 = "^2.11.2"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

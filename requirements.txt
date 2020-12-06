@@ -1,6 +1,0 @@
-altgraph==0.14
-Jinja2==2.8
-packaging==16.8
-pretty==0.1
-py2app==0.14
-pyparsing==2.2.0
