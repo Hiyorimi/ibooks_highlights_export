@@ -1,22 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from jinja2 import Environment, FileSystemLoader
 from typing import List, Dict
-from glob import glob
 import os
-import sqlite3
 import datetime
-import re
-import sys
-if sys.version_info < (3, 0):
-    # Python 2
-    import Tkinter as tk
-else:
-    # Python 3
-    import tkinter as tk
-    import tkinter.messagebox as tkMessageBox
-    import tkinter.filedialog as tkFileDialog
+from glob import glob
+
+from jinja2 import Environment, FileSystemLoader
+import sqlite3
+import tkinter as tk
+import tkinter.messagebox as tkMessageBox
+import tkinter.filedialog as tkFileDialog
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_ENVIRONMENT = Environment(autoescape=False,
@@ -66,17 +60,25 @@ def get_mm_color(num: int) -> int:
         return num
 
 
-def get_mind_map_contents(book_id: str):
-    """Loads mind map raw data for book_id."""
+def get_chapters(ibooks_cursor, book_id: str) -> List[str]:
+    """Returns list of book's chapters."""
     res1 = ibooks_cursor.execute(
         "select distinct(ZFUTUREPROOFING5) from ZAEANNOTATION "
-        "where (ZANNOTATIONSELECTEDTEXT not NULL)  AND  `ZANNOTATIONASSETID` = '"
-        + str(book_id) + "' order by"
-        " ZANNOTATIONASSETID, ZPLLOCATIONRANGESTART ;")
+        "where (ZANNOTATIONSELECTEDTEXT not NULL)  AND  `ZANNOTATIONASSETID` = ? order by"
+                         " ZANNOTATIONASSETID, ZPLLOCATIONRANGESTART ;",
+        (book_id, ),
+    )
     chapters = []
     for chapter in res1:
         if chapter not in chapters:
             chapters.append(chapter[0])
+
+    return chapters
+
+
+def get_mind_map_contents(book_id: str):
+    """Loads mind map raw data for book_id."""
+    chapters = get_chapters(ibooks_cursor, book_id)
     print(chapters)
 
     chapters_list = []
@@ -87,19 +89,26 @@ def get_mind_map_contents(book_id: str):
 
     res1 = ibooks_cursor.execute(
         "select ZANNOTATIONASSETID, ZANNOTATIONREPRESENTATIVETEXT, ZANNOTATIONSELECTEDTEXT, "
-        "ZFUTUREPROOFING5, ZANNOTATIONSTYLE, ZFUTUREPROOFING5 from ZAEANNOTATION "
-        "where (ZANNOTATIONSELECTEDTEXT not NULL)  AND  `ZANNOTATIONASSETID` = '"
-        + str(book_id) + "' order by"
-        " ZANNOTATIONASSETID, ZPLLOCATIONRANGESTART ;")
+        "ZFUTUREPROOFING5, ZANNOTATIONSTYLE from ZAEANNOTATION "
+        "where (ZANNOTATIONSELECTEDTEXT not NULL)  AND  `ZANNOTATIONASSETID` = ?"
+        " order by ZANNOTATIONASSETID, ZPLLOCATIONRANGESTART ;",
+        (book_id, ),
+    )
 
     annotations = []
-    for ZANNOTATIONASSETID, ZANNOTATIONREPRESENTATIVETEXT, ZANNOTATIONSELECTEDTEXT, \
-        ZFUTUREPROOFING5, ZANNOTATIONSTYLE, ZFUTUREPROOFING5 in res1:
-        annotations.append([
-            ZANNOTATIONASSETID, ZANNOTATIONREPRESENTATIVETEXT,
-            ZANNOTATIONSELECTEDTEXT, ZFUTUREPROOFING5, ZANNOTATIONSTYLE,
-            chapters.index(ZFUTUREPROOFING5) + 1, counter
-        ])
+    for annotation_asset_id, annotation_representative_text, annotation_selected_text, \
+        future_proofing, annotation_style in res1:
+        annotations.append(
+            [
+                annotation_asset_id,
+                annotation_representative_text,
+                annotation_selected_text,
+                future_proofing,
+                annotation_style,
+                chapters.index(future_proofing) + 1,
+                counter,
+            ],
+        )
         counter += 1
 
     # beginning another way of doing the same thing, just more efficient
@@ -151,7 +160,7 @@ def get_mind_map_contents(book_id: str):
         print(">>>", k)
         try:
             chapter_name = k
-            if k == "" or k == None:
+            if k == "" or k is None:
                 chapter_name = "Misc"
             nodes.append([chapter_name, chapters[k]])
             print(chapter_name)
