@@ -119,7 +119,7 @@ def get_chapters_and_annotations(
 def create_nodes_for_open_mindmap(
     chapters_list: List[List[Union[str,int]]],
     annotations: List[List[Union[str, Any]]],
-) -> List[List[str, int, list]]:
+) -> List[List[Union[str, int, list]]]:
     """Assembles nodes for open mindmap format."""
     # Move annotations to chapter object
     chapters = {}
